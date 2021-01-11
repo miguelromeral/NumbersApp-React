@@ -14,8 +14,9 @@ class FormNumber extends React.Component {
                         className="form-control"
                         onChange={this.props.onChangeType}
                         value={this.props.type}>
-                        <option value="trivia">trivia</option>
-                        <option value="math">math</option>
+                        <option value="trivia">Trivia</option>
+                        <option value="math">Math</option>
+                        <option value="year">Year</option>
                     </select>
 
                     <input

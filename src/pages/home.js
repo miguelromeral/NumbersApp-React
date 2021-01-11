@@ -22,6 +22,7 @@ class Home extends React.Component {
         switch(type){
             case 'trivia': return "https://numbersapi.p.rapidapi.com/"+value+"/trivia?fragment=true&notfound=floor&json=true";
             case 'math': return "https://numbersapi.p.rapidapi.com/"+value+"/math?fragment=true&json=true";
+            case 'year': return "https://numbersapi.p.rapidapi.com/"+value+"/year?fragment=true&json=true";
             default: return 'null';
         }
     }
