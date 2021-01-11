@@ -1,7 +1,7 @@
 import React from 'react'
 import 'bootstrap/dist/css/bootstrap.css'
 
-function Movie(props) {
+function Number(props) {
 	return (
 		<div className="card">
 			<div className="card-body">
@@ -12,7 +12,7 @@ function Movie(props) {
 	)
 }
 
-export default Movie
+export default Number
 
 
 

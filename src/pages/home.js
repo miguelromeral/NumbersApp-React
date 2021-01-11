@@ -14,16 +14,23 @@ class Home extends React.Component {
         data: [],
         value: '',
         type: 'trivia',
+        refreshVisible: false,
         loading: false,
         error: false,
     }
 
     getUrlByType = (value, type) => {
-        switch(type){
-            case 'trivia': return "https://numbersapi.p.rapidapi.com/"+value+"/trivia?fragment=true&notfound=floor&json=true";
-            case 'math': return "https://numbersapi.p.rapidapi.com/"+value+"/math?fragment=true&json=true";
-            case 'year': return "https://numbersapi.p.rapidapi.com/"+value+"/year?fragment=true&json=true";
-            default: return 'null';
+        if (type == 'random') {
+            return "https://numbersapi.p.rapidapi.com/random/trivia?&fragment=true&json=true";
+        }
+        if (value == '') {
+            return null;
+        }
+        switch (type) {
+            case 'trivia': return "https://numbersapi.p.rapidapi.com/" + value + "/trivia?fragment=true&notfound=floor&json=true";
+            case 'math': return "https://numbersapi.p.rapidapi.com/" + value + "/math?fragment=true&json=true";
+            case 'year': return "https://numbersapi.p.rapidapi.com/" + value + "/year?fragment=true&json=true";
+            default: return null;
         }
     }
 
@@ -36,25 +43,33 @@ class Home extends React.Component {
             console.log('Fetching: ' + value)
             var url = this.getUrlByType(value, type)
             console.log("URL: " + url)
-            let res = await fetch(url, {
-                "method": "GET",
-                "headers": {
-                    "x-rapidapi-key": apiKey,
-                    "x-rapidapi-host": "numbersapi.p.rapidapi.com"
-                }
-            })
-            let data = await res.json()
-            this.setState({
-                loading: false,
-            })
-            if (data.Response === "False") {
-                this.setState({
-                    error: data.Error,
+            if (url != null) {
+                let res = await fetch(url, {
+                    "method": "GET",
+                    "headers": {
+                        "x-rapidapi-key": apiKey,
+                        "x-rapidapi-host": "numbersapi.p.rapidapi.com"
+                    }
                 })
+                let data = await res.json()
+                this.setState({
+                    loading: false,
+                })
+                if (data.Response === "False") {
+                    this.setState({
+                        error: data.Error,
+                    })
+                } else {
+                    this.setState({
+                        data,
+                        error: false,
+                    })
+                }
             } else {
                 this.setState({
-                    data,
+                    data: [],
                     error: false,
+                    loading: false
                 })
             }
         } catch (e) {
@@ -85,22 +100,28 @@ class Home extends React.Component {
     }
 
 
-    
+
     handleChangeType = e => {
         e.preventDefault()
         var value = e.target.value
         var empty = value == ''
-        console.log("New Type: "+value)
+        console.log("New Type: " + value)
         this.setState({
             type: value,
+            refreshVisible: (value == 'random' ? true : false)
         })
-        
-        console.log("Fetching by value and type: " + this.state.value + ", " + value)
-        this.fetchData(this.state.value, value)
+
+        if (this.state.value !== '' || value == 'random') {
+            console.log("Fetching by value and type: " + this.state.value + ", " + value)
+            this.fetchData(this.state.value, value)
+        }
+    }
+
+    refreshFetch = e => {
+        this.fetchData(this.state.value, this.state.type)
     }
 
 
-    
     display(state) {
         if (state.loading) {
             return <Loading />
@@ -109,7 +130,7 @@ class Home extends React.Component {
             return <Error description={state.error} />
         }
         if (state.data.length === 0) {
-            return <h1>No facts found</h1>
+            return <h5>No facts found</h5>
         } else {
             /*return <Movie
                 {...state.data}
@@ -136,10 +157,13 @@ class Home extends React.Component {
                             onChange={this.handleChange}
                             onChangeType={this.handleChangeType}
                             value={this.state.value}
-                            typeValue={this.state.type} />
+                            typeValue={this.state.type}
+                            refreshVisible={this.state.refreshVisible}
+                            refreshAction={this.refreshFetch} />
 
-                            
-                {this.display(this.state)}
+                    </div>
+                    <div>
+                        {this.display(this.state)}
                     </div>
                 </Layout>
             </React.Fragment>

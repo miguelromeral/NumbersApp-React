@@ -17,16 +17,34 @@ class FormNumber extends React.Component {
                         <option value="trivia">Trivia</option>
                         <option value="math">Math</option>
                         <option value="year">Year</option>
+                        <option value="random">Random</option>
                     </select>
 
+
+
+                    {this.props.refreshVisible ?
+                        null
+                        :
+                        <input
+                            type="number"
+                            className="form-control"
+                            placeholder="Get info about number..."
+                            name="value"
+                            value={this.props.value}
+                            onChange={this.props.onChange}>
+                        </input>
+                    }
+
+
                     <input
-                        type="number"
                         className="form-control"
-                        placeholder="Get info about number..."
-                        name="value"
-                        value={this.props.value}
-                        onChange={this.props.onChange}>
+                        type="button"
+                        name="refresh"
+                        value="Refresh"
+                        onClick={this.props.refreshAction}
+                    >
                     </input>
+
                 </div>
             </Layout>
         )
