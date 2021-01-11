@@ -7,6 +7,17 @@ class FormNumber extends React.Component {
         return (
             <Layout>
                 <div class="input-group">
+
+                    <select
+                        name="type"
+                        id="type"
+                        className="form-control"
+                        onChange={this.props.onChangeType}
+                        value={this.props.type}>
+                        <option value="trivia">trivia</option>
+                        <option value="math">math</option>
+                    </select>
+
                     <input
                         type="number"
                         className="form-control"

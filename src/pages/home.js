@@ -13,18 +13,27 @@ class Home extends React.Component {
     state = {
         data: [],
         value: '',
+        type: 'trivia',
         loading: false,
         error: false,
     }
 
-    fetchData = async (value) => {
+    getUrlByType = (value, type) => {
+        switch(type){
+            case 'trivia': return "https://numbersapi.p.rapidapi.com/"+value+"/trivia?fragment=true&notfound=floor&json=true";
+            case 'math': return "https://numbersapi.p.rapidapi.com/"+value+"/math?fragment=true&json=true";
+            default: return 'null';
+        }
+    }
+
+    fetchData = async (value, type) => {
         try {
             this.setState({
                 loading: true,
                 error: false,
             })
             console.log('Fetching: ' + value)
-            var url = "https://numbersapi.p.rapidapi.com/"+value+"/trivia?fragment=true&notfound=floor&json=true"
+            var url = this.getUrlByType(value, type)
             console.log("URL: " + url)
             let res = await fetch(url, {
                 "method": "GET",
@@ -69,8 +78,24 @@ class Home extends React.Component {
                 data: [],
             })
         } else {
-            this.fetchData(value)
+            console.log("Fetching by value and type: " + value + ", " + this.state.type)
+            this.fetchData(value, this.state.type)
         }
+    }
+
+
+    
+    handleChangeType = e => {
+        e.preventDefault()
+        var value = e.target.value
+        var empty = value == ''
+        console.log("New Type: "+value)
+        this.setState({
+            type: value,
+        })
+        
+        console.log("Fetching by value and type: " + this.state.value + ", " + value)
+        this.fetchData(this.state.value, value)
     }
 
 
@@ -108,7 +133,9 @@ class Home extends React.Component {
                     <div>
                         <FormNumber
                             onChange={this.handleChange}
-                            value={this.state.value} />
+                            onChangeType={this.handleChangeType}
+                            value={this.state.value}
+                            typeValue={this.state.type} />
 
                             
                 {this.display(this.state)}
