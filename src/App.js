@@ -1,17 +1,21 @@
-//App.js
+/**
+ * Manages the app's diferent states
+ */
+
 import React from 'react'
-import Home from './pages/home'
+import HomeContainer from './pages/Home/homeContainer'
 import Error from './pages/error'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
 function App() {
   return (
+    // Diferent routes the app will have
     <BrowserRouter>
       <Switch>
         <Route
           exact
           path="/"
-          component={Home}
+          component={HomeContainer}
         />
         <Route
           component={Error}

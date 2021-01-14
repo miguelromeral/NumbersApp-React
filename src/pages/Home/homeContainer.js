@@ -1,29 +1,50 @@
+/**
+ * Home Page
+ * 
+ * It'll show the form to fetch for number facts
+ */
+
 import React from 'react'
-import Layout from '../components/layout'
-import FormNumber from '../components/form_number'
-import Number from '../components/number'
-import Loading from '../components/loading'
-import trimDateValue from '../components/trimDateValue'
-import Error from '../pages/error'
-import apiKey from '../config'
-import Type from '../classes/type'
+import Layout from '../../components/layout'
+import FormNumber from '../../components/form_number'
+import Number from '../../components/number'
+import Loading from '../../components/loading'
+import trimDateValue from '../../classes/trimDateValue'
+import Error from '../error'
+import apiKey from '../../config'
+import Type from '../../classes/type'
+import Home from './home'
 import 'bootstrap/dist/css/bootstrap.css'
 
-class Home extends React.Component {
-
+/**
+ * Container Component for Home page
+ */
+class HomeContainer extends React.Component {
 
     state = {
+        // Data retreived from the API
         data: [],
+        // Input from the user
         value: '',
+        // Type of query
         type: Type.TRIVIA,
+        // Flag if the query is being performed
         loading: false,
+        // Flag if the query had some problem
         error: false,
     }
 
+    /**
+     * Gets a different URL depending on the type of query
+     * @param {string} value Value in the input. It may be YYYY-MM-DD or just a number in a string
+     * @param {Type} type Type of query
+     */
     getUrlByType = (value, type) => {
+        // In case of random, no value needed
         if (type == Type.RANDOM) {
             return "https://numbersapi.p.rapidapi.com/random/trivia?&fragment=true&json=true";
         }
+        // If it has no value, no fetch can be performed
         if (value == '') {
             return null;
         }
@@ -36,17 +57,23 @@ class Home extends React.Component {
         }
     }
 
-
+    /**
+     * Performs the query to the API asynchronously
+     * @param {string} value Value in the input. It may be YYYY-MM-DD or just a number in a string
+     * @param {Type} type Type of query
+     */
     fetchData = async (value, type) => {
         try {
+            // Loading State
             this.setState({
                 loading: true,
                 error: false,
             })
-            console.log('Fetching: ' + value)
+            console.log('Fetching: ' + value + ", Type: "+ type)
             var url = this.getUrlByType(value, type)
             console.log("URL: " + url)
             if (url != null) {
+                // Performs the query
                 let res = await fetch(url, {
                     "method": "GET",
                     "headers": {
@@ -54,6 +81,7 @@ class Home extends React.Component {
                         "x-rapidapi-host": "numbersapi.p.rapidapi.com"
                     }
                 })
+                // Data retrieved
                 let data = await res.json()
                 this.setState({
                     loading: false,
@@ -83,6 +111,10 @@ class Home extends React.Component {
         }
     }
 
+    /**
+     * Action when changing input's value
+     * @param {event} e 
+     */
     handleChange = e => {
         e.preventDefault()
         var value = e.target.value
@@ -90,6 +122,7 @@ class Home extends React.Component {
         this.setState({
             value: value,
         })
+        // If no value specified, nothing to show
         if (empty) {
             this.setState({
                 loading: false,
@@ -97,92 +130,60 @@ class Home extends React.Component {
                 data: [],
             })
         } else {
-            console.log("Fetching by value and type: " + value + ", " + this.state.type)
+            // If there is a value, fetch it as the user types
             this.fetchData(value, this.state.type)
         }
     }
 
 
-
+    /**
+     * Action when changing the type of query
+     * @param {event} e  
+     */
     handleChangeType = e => {
         e.preventDefault()
         var type = e.target.value
-
-        var empty = type == ''
         var lastType = this.state.type
         console.log("New Type: " + type)
         this.setState({
             type: type,
+            // In case there has been a change to/from date, put empty values to prevent format exceptions
             value: (lastType == Type.DATE || type == Type.DATE ? '' : this.state.value)
         })
+        // Erase the latest result from the API when changing dates
         if (type == Type.DATE || lastType == Type.DATE) {
             this.fetchData('', '')
         } else {
+            // If there is already a value or the random type (that doesn't requiere value), performs the fetch
             if (this.state.value !== '' || type == 'random') {
-                console.log("Fetching by value and type: " + this.state.value + ", " + type)
                 this.fetchData(this.state.value, type)
             }
         }
-
-
-
     }
 
+    /**
+     * Refresh button action
+     * @param {event} e 
+     */
     refreshFetch = e => {
+        // Gets the current value and type
         this.fetchData(this.state.value, this.state.type)
     }
 
 
-    display(state) {
-        if (state.loading) {
-            return <Loading />
-        }
-        if (state.error) {
-            return <Error description={state.error} />
-        }
-        if (state.data.length === 0) {
-            return <h5>No facts found</h5>
-        } else {
-            /*return <Movie
-                {...state.data}
-                
-            />*/
-            return <Number
-                {...state.data}
-                type={this.state.type}
-                date={this.state.value} />
-            //<div>Displaying!: {state.data}</div>
-        }
-
-    }
-
-
-
     render() {
         return (
-            <React.Fragment>
-                <Layout>
-                    <h1>
-                        Numbers Facts!
-                    </h1>
-
-                    <div>
-                        <FormNumber
-                            onChange={this.handleChange}
-                            onChangeType={this.handleChangeType}
-                            value={this.state.value}
-                            type={this.state.type}
-                            refreshAction={this.refreshFetch} />
-
-                    </div>
-                    <div>
-                        {this.display(this.state)}
-                    </div>
-                </Layout>
-            </React.Fragment>
+            <Home
+                state={this.state}
+                onChange={this.handleChange}
+                onChangeType={this.handleChangeType}
+                value={this.state.value}
+                type={this.state.type}
+                refreshAction={this.refreshFetch}
+            />
         )
     }
 
 }
 
-export default Home
+export default HomeContainer

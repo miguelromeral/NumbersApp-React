@@ -2,13 +2,20 @@ import React from 'react'
 import Type from '../classes/type'
 import Layout from './layout'
 
+/**
+ * Form to set the number to look for facts
+ */
 class FormNumber extends React.Component {
 
+    /**
+     * Shows a different input depending of the type
+     */
     showInput() {
-
+        // If random facts, no need to set any input
         if (this.props.type == Type.RANDOM) {
             return null
         } else {
+            // Same input, but changing the type if needed
             return <input
                 type={this.props.type == Type.DATE ? "date" : "number"}
                 className="form-control"
@@ -22,7 +29,7 @@ class FormNumber extends React.Component {
 
     render() {
         return (
-            <div>
+            <React.Fragment>
                 <div class="input-group">
 
                     <select
@@ -49,11 +56,11 @@ class FormNumber extends React.Component {
                         name="refresh"
                         value="Refresh"
                         onClick={this.props.refreshAction}
-                    >
-                    </input>
+                    />
+
 
                 </div>
-            </div>
+            </React.Fragment>
         )
     }
 

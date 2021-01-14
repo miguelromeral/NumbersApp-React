@@ -1,7 +1,11 @@
 import React from 'react'
-import trimDateValue from './trimDateValue'
+import trimDateValue from '../classes/trimDateValue'
 import 'bootstrap/dist/css/bootstrap.css'
 
+/**
+ * Number Functional component
+ * @param {*} props Properties
+ */
 function Number(props) {
 	return (
 		<div className="card">
@@ -17,17 +21,3 @@ function Number(props) {
 }
 
 export default Number
-
-
-
-/*
-
-{4 items
-"text":"the number of steps in the gallows"
-"number":13
-"found":true
-"type":"trivia"
-}
-
-*/
-
