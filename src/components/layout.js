@@ -1,11 +1,11 @@
 function Layout(props) {
     return (
         <div className="container">
-            <div className="col-lg-3"></div>
-            <div className="col-lg-6">
+            <div className="col-2"></div>
+            <div className="col-8">
                 {props.children}
             </div>
-            <div className="col-lg-3"></div>
+            <div className="col-2"></div>
         </div>
     )
 }

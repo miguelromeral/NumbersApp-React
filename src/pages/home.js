@@ -3,8 +3,10 @@ import Layout from '../components/layout'
 import FormNumber from '../components/form_number'
 import Number from '../components/number'
 import Loading from '../components/loading'
+import trimDateValue from '../components/trimDateValue'
 import Error from '../pages/error'
 import apiKey from '../config'
+import Type from '../classes/type'
 import 'bootstrap/dist/css/bootstrap.css'
 
 class Home extends React.Component {
@@ -13,26 +15,27 @@ class Home extends React.Component {
     state = {
         data: [],
         value: '',
-        type: 'trivia',
-        refreshVisible: false,
+        type: Type.TRIVIA,
         loading: false,
         error: false,
     }
 
     getUrlByType = (value, type) => {
-        if (type == 'random') {
+        if (type == Type.RANDOM) {
             return "https://numbersapi.p.rapidapi.com/random/trivia?&fragment=true&json=true";
         }
         if (value == '') {
             return null;
         }
         switch (type) {
-            case 'trivia': return "https://numbersapi.p.rapidapi.com/" + value + "/trivia?fragment=true&notfound=floor&json=true";
-            case 'math': return "https://numbersapi.p.rapidapi.com/" + value + "/math?fragment=true&json=true";
-            case 'year': return "https://numbersapi.p.rapidapi.com/" + value + "/year?fragment=true&json=true";
+            case Type.TRIVIA: return "https://numbersapi.p.rapidapi.com/" + value + "/trivia?fragment=true&notfound=floor&json=true";
+            case Type.MATH: return "https://numbersapi.p.rapidapi.com/" + value + "/math?fragment=true&json=true";
+            case Type.YEAR: return "https://numbersapi.p.rapidapi.com/" + value + "/year?fragment=true&json=true";
+            case Type.DATE: return "https://numbersapi.p.rapidapi.com/" + trimDateValue(value) + "/date?fragment=true&json=true";
             default: return null;
         }
     }
+
 
     fetchData = async (value, type) => {
         try {
@@ -103,18 +106,26 @@ class Home extends React.Component {
 
     handleChangeType = e => {
         e.preventDefault()
-        var value = e.target.value
-        var empty = value == ''
-        console.log("New Type: " + value)
-        this.setState({
-            type: value,
-            refreshVisible: (value == 'random' ? true : false)
-        })
+        var type = e.target.value
 
-        if (this.state.value !== '' || value == 'random') {
-            console.log("Fetching by value and type: " + this.state.value + ", " + value)
-            this.fetchData(this.state.value, value)
+        var empty = type == ''
+        var lastType = this.state.type
+        console.log("New Type: " + type)
+        this.setState({
+            type: type,
+            value: (lastType == Type.DATE || type == Type.DATE ? '' : this.state.value)
+        })
+        if (type == Type.DATE || lastType == Type.DATE) {
+            this.fetchData('', '')
+        } else {
+            if (this.state.value !== '' || type == 'random') {
+                console.log("Fetching by value and type: " + this.state.value + ", " + type)
+                this.fetchData(this.state.value, type)
+            }
         }
+
+
+
     }
 
     refreshFetch = e => {
@@ -136,7 +147,10 @@ class Home extends React.Component {
                 {...state.data}
                 
             />*/
-            return <Number {...state.data} />
+            return <Number
+                {...state.data}
+                type={this.state.type}
+                date={this.state.value} />
             //<div>Displaying!: {state.data}</div>
         }
 
@@ -149,7 +163,7 @@ class Home extends React.Component {
             <React.Fragment>
                 <Layout>
                     <h1>
-                        Numbers!
+                        Numbers Facts!
                     </h1>
 
                     <div>
@@ -157,8 +171,7 @@ class Home extends React.Component {
                             onChange={this.handleChange}
                             onChangeType={this.handleChangeType}
                             value={this.state.value}
-                            typeValue={this.state.type}
-                            refreshVisible={this.state.refreshVisible}
+                            type={this.state.type}
                             refreshAction={this.refreshFetch} />
 
                     </div>

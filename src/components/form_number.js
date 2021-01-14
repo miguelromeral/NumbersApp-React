@@ -1,11 +1,28 @@
 import React from 'react'
+import Type from '../classes/type'
 import Layout from './layout'
 
 class FormNumber extends React.Component {
 
+    showInput() {
+
+        if (this.props.type == Type.RANDOM) {
+            return null
+        } else {
+            return <input
+                type={this.props.type == Type.DATE ? "date" : "number"}
+                className="form-control"
+                placeholder="Get info about number..."
+                name="value"
+                value={this.props.value}
+                onChange={this.props.onChange}>
+            </input>
+        }
+    }
+
     render() {
         return (
-            <Layout>
+            <div>
                 <div class="input-group">
 
                     <select
@@ -14,26 +31,16 @@ class FormNumber extends React.Component {
                         className="form-control"
                         onChange={this.props.onChangeType}
                         value={this.props.type}>
-                        <option value="trivia">Trivia</option>
-                        <option value="math">Math</option>
-                        <option value="year">Year</option>
-                        <option value="random">Random</option>
+                        <option value={Type.TRIVIA}>Trivia</option>
+                        <option value={Type.MATH}>Math</option>
+                        <option value={Type.YEAR}>Year</option>
+                        <option value={Type.DATE}>Date</option>
+                        <option value={Type.RANDOM}>Random</option>
                     </select>
 
 
 
-                    {this.props.refreshVisible ?
-                        null
-                        :
-                        <input
-                            type="number"
-                            className="form-control"
-                            placeholder="Get info about number..."
-                            name="value"
-                            value={this.props.value}
-                            onChange={this.props.onChange}>
-                        </input>
-                    }
+                    {this.showInput()}
 
 
                     <input
@@ -46,7 +53,7 @@ class FormNumber extends React.Component {
                     </input>
 
                 </div>
-            </Layout>
+            </div>
         )
     }
 

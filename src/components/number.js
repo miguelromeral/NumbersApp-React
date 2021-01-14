@@ -1,11 +1,15 @@
 import React from 'react'
+import trimDateValue from './trimDateValue'
 import 'bootstrap/dist/css/bootstrap.css'
 
 function Number(props) {
 	return (
 		<div className="card">
 			<div className="card-body">
-				<h5 className="card-title">{props.number}</h5>
+				<h5 className="card-title">
+					{props.type != 'date' ? props.number : new String(`${props.year}/${trimDateValue(props.date)}`)}
+
+				</h5>
 				<p className="card-text">{props.text}</p>
 			</div>
 		</div>
